@@ -1,4 +1,3 @@
-Join us on Discord. https://discord.gg/RMxCx63 
 Cheat/mod menu for the game GTFO
 Compile, drop the files in the GTFO_DATA/MANAGED folder and inject using any mono injector as follows:
 
