@@ -20,21 +20,15 @@ namespace gtfohack
         public static void DrawBox(float x, float y, float w, float h, Color color)
         {
             menu gfg = new menu();
-            gfg.tofile("drawtest.ini", "blaaaaa1", true);
             DrawLine(new Vector2(x, y), new Vector2(x + w, y), color);
-            gfg.tofile("drawtest.ini", "blaaaaa1", true);
             DrawLine(new Vector2(x, y), new Vector2(x, y + h), color);
-            gfg.tofile("drawtest.ini", "blaaaaa1", true);
             DrawLine(new Vector2(x + w, y), new Vector2(x + w, y + h), color);
-            gfg.tofile("drawtest.ini", "blaaaaa1", true);
             DrawLine(new Vector2(x, y + h), new Vector2(x + w, y + h), color);
-            gfg.tofile("drawtest.ini", "blaaaaa1", true);
         }
 
         public static void DrawLine(Vector2 lineStart, Vector2 lineEnd, Color color, int thickness)
         {
             menu gfg = new menu();
-            gfg.tofile("drawtest.ini", "wwwwwww1", true);
             if (_coloredLineTexture == null || _coloredLineColor != color)
             {
                 _coloredLineColor = color;
@@ -43,18 +37,14 @@ namespace gtfohack
                 _coloredLineTexture.wrapMode = 0;
                 _coloredLineTexture.Apply();
             }
-            gfg.tofile("drawtest.ini", "wwwwwww2", true);
             DrawLineStretched(lineStart, lineEnd, _coloredLineTexture, thickness);
-            gfg.tofile("drawtest.ini", "wwwwwww3", true);
         }
 
         public static void DrawLineStretched(Vector2 lineStart, Vector2 lineEnd, Texture2D texture, int thickness)
         {
             menu gfg = new menu();
-            gfg.tofile("drawtest.ini", "zzzzzz1", true);
             var vector = lineEnd - lineStart;
             float pivot = 57.29578f * Mathf.Atan(vector.y / vector.x);
-            gfg.tofile("drawtest.ini", "pivot:"  + pivot, true);
             if (vector.x < 0f)
             {
                 pivot += 180f;
@@ -66,19 +56,14 @@ namespace gtfohack
             }
 
             int yOffset = (int)Mathf.Ceil((float)(thickness / 2));
-            gfg.tofile("drawtest.ini", "zzzzzz2", true);
             GUIUtility.RotateAroundPivot(pivot, lineStart);
-            gfg.tofile("drawtest.ini", "zzzzzz3", true);
             GUI.DrawTexture(new Rect(lineStart.x, lineStart.y - (float)yOffset, vector.magnitude, (float)thickness), texture);
-            gfg.tofile("drawtest.ini", "zzzzzz4", true);
             GUIUtility.RotateAroundPivot(-pivot, lineStart);
-            gfg.tofile("drawtest.ini", "zzzzzz5", true);
         }
 
         public static void DrawLine(Vector2 lineStart, Vector2 lineEnd, Texture2D texture)
         {
             menu gfg = new menu();
-            gfg.tofile("drawtest.ini", "dsdffs1", true);
             DrawLine(lineStart, lineEnd, texture, 1);
         }
 
@@ -87,7 +72,6 @@ namespace gtfohack
             menu gfg = new menu();
             var vector = lineEnd - lineStart;
             float pivot = 57.29578f * Mathf.Atan(vector.y / vector.x);
-            gfg.tofile("drawtest.ini", "dsdffs2", true);
             if (vector.x < 0f)
             {
                 pivot += 180f;
@@ -102,7 +86,6 @@ namespace gtfohack
             var rect = new Rect(lineStart.x, lineStart.y - (float)num2, Vector2.Distance(lineStart, lineEnd), (float)thickness);
             GUIUtility.RotateAroundPivot(pivot, lineStart);
             GUI.BeginGroup(rect);
-            gfg.tofile("drawtest.ini", "dsdffs3", true);
             int num3 = Mathf.RoundToInt(rect.width);
             int num4 = Mathf.RoundToInt(rect.height);
 
@@ -113,7 +96,6 @@ namespace gtfohack
                     GUI.DrawTexture(new Rect((float)j, (float)i, (float)texture.width, (float)texture.height), texture);
                 }
             }
-            gfg.tofile("drawtest.ini", "dsdffs4", true);
             GUI.EndGroup();
             GUIUtility.RotateAroundPivot(-pivot, lineStart);
         }

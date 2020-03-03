@@ -149,7 +149,6 @@ namespace gtfohack
         public void testdraw()
         {
             Color color;
-            tofile("drawtest.ini", "OUTPUT: ", true);
             EnemyAI[] EnemyAI = (EnemyAI[])UnityEngine.Object.FindObjectsOfType(typeof(EnemyAI));
             foreach (EnemyAI eai in EnemyAI)
             {
@@ -161,9 +160,7 @@ namespace gtfohack
                     float y = Mathf.Abs((float)(vector3.y - vector2.y));
                     float x = y / 2f;
                     color = Color.red;
-                    tofile("drawtest.ini", "vector2: " + vector2 + "FloatY: " + y + "FloatX: " + x, true);
                     Vector2 testvec = new Vector2(vector2.x, Screen.height - vector2.y);
-                    tofile("drawtest.ini", "testvec: " + testvec, true);
                     Gizmos.DrawWireCube(testvec, new Vector3(1, 1, 1));
                 }
             }
