@@ -267,7 +267,8 @@ namespace gtfohack
             if (Input.GetKeyDown(KeyCode.Insert))
             {
                 openmenu = !openmenu;
-                //debuginfo(openmenu);
+                //debuginfo(openmenu);//
+                //debuginfo(openmenu);//
             }
             if (btp)
             {
