@@ -9,20 +9,13 @@ using UnityEngine.UI;
 using Gear;
 using Enemies;
 using AK;
-using ItemSetup;
 using System.Collections;
 using System.Collections.Generic;
-using Detection;
 using System.Runtime.InteropServices;
 using Globals;
-using System.ComponentModel;
-using System.Reflection;
-using System.Diagnostics;
-using System.Linq;
 using SickDev.DevConsole;
-using GameEvent;
 using SNetwork;
-using SickDev;
+
 namespace gtfohack
 {
     public class menu : MonoBehaviour
@@ -267,8 +260,6 @@ namespace gtfohack
             if (Input.GetKeyDown(KeyCode.Insert))
             {
                 openmenu = !openmenu;
-                //debuginfo(openmenu);//
-                //debuginfo(openmenu);//
             }
             if (btp)
             {
@@ -313,7 +304,7 @@ namespace gtfohack
             {
                 if (Input.GetKeyDown(KeyCode.F1)) Talk();
                 if (Input.GetKeyDown(KeyCode.F2)) PlayerChatManager.WantToSentTextMessage(PlayerManager.GetLocalPlayerAgent(), "Hello from " + PlayerManager.GetLocalPlayerAgent().PlayerName + "!!");
-                if (Input.GetKeyDown(KeyCode.F3)) { bfreeze = !bfreeze; freezeothers(bfreeze); }
+                //if (Input.GetKeyDown(KeyCode.F3)) { bfreeze = !bfreeze; freezeothers(bfreeze); }
                 if (Input.GetKeyDown(KeyCode.F4)) { incteam(); }
                 if (Input.GetKeyDown(KeyCode.F5)) { decteam(); }
                 if (Input.GetKeyDown(KeyCode.F6)) { trollchat(); }
@@ -400,21 +391,8 @@ namespace gtfohack
             foreach (EnemyAI eg in FindObjectsOfType(typeof(EnemyAI)) as EnemyAI[])
             {
                 ProjectileManager.WantToSpawnGlueOnEnemyAgent(0, eg.m_enemyAgent, 1, eg.m_enemyAgent.EnemyData.ModelData.HeadScale, vol);
-                //ProjectileManager.WantToSpawnGlueOnEnemyAgent(0, eg.m_enemyAgent, 1, eg.m_enemyAgent.EyePosition, vol);
             }
 
-            //    ElevatorRide fdssfdf = new ElevatorRide();
-            //foreach (PlayerAgent ddd in FindObjectsOfType(typeof(PlayerAgent)) as PlayerAgent[])
-            //{
-            //    if (ddd.IsLocallyOwned)
-            //    {
-            //       //ddd.Locomotion.InElevator.Enter();
-            //        ElevatorRide.StartElevatorRide();
-            //        ElevatorRide.StartPreReleaseSequence(null);
-            //        //ddd.Damage.PushDamage(10000000f, ddd, Vector3.zero, Vector3.zero);
-
-            //    }
-            //}
         }
         public void hackstuff()
         {
@@ -579,7 +557,6 @@ namespace gtfohack
                 }
                 if (enemyAI != null)
                 {
-                    //tofile("badguys.ini", enemyAI.m_enemyAgent.name, true);
                     enemyAI.m_enemyAgent.Damage.InstantDead(true);
                 }
             }
@@ -766,11 +743,11 @@ namespace gtfohack
             GUI.contentColor = Color.white;
             GUI.Button(new Rect((float)10, 15, 350, 200), "Make All Players Talk [F1]", fontSize);
             GUI.Button(new Rect((float)10, 35, 300, 200), "Greeetings [F2]", fontSize);
-            GUI.Button(new Rect((float)10, 55, 350, 200), "Freeze other players [F3]: " + (bfreeze ? "OFF" : "ON"), fontSize);
-            GUI.Button(new Rect((float)10, 75, 305, 200), "Increase Team Health [F4]", fontSize);
-            GUI.Button(new Rect((float)10, 95, 350, 200), "Decrease Team Health [F5]", fontSize);
-            GUI.Button(new Rect((float)10, 115, 350, 200), "Team Chat Messages [F6]", fontSize);
-            GUI.Button(new Rect((float)10, 135, 350, 200), "Sound Off [F7]", fontSize);
+            //GUI.Button(new Rect((float)10, 55, 350, 200), "Freeze other players [F3]: " + (bfreeze ? "OFF" : "ON"), fontSize);
+            GUI.Button(new Rect((float)10, 55, 305, 200), "Increase Team Health [F4]", fontSize);
+            GUI.Button(new Rect((float)10, 75, 350, 200), "Decrease Team Health [F5]", fontSize);
+            GUI.Button(new Rect((float)10, 95, 350, 200), "Team Chat Messages [F6]", fontSize);
+            GUI.Button(new Rect((float)10, 115, 350, 200), "Sound Off [F7]", fontSize);
         }
         void Mainmenu(int windowID)
         {
@@ -795,7 +772,7 @@ namespace gtfohack
             if (openmenu)
             {
                 fontSize.fontSize = 18;
-                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "BY:GamePwnzer" + "\n" + "Shoutout To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
+                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "BY:GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
                 GUI.Window(0, new Rect((float)menusx, menusy, 230, 130), Mainmenu, "MAIN MENU: [INSERT]");
             }
             else
