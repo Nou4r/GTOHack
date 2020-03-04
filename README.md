@@ -6,6 +6,7 @@ Add the dll's in the GTFO_DATA/MANAGED folder as references in the project. Comp
 
 ## Usage
 NOTE: compiling yourself will always give you the most current version
+#
 Releases here: https://gitlab.com/CainPwnzer/gtfohack/-/releases
 - Unzip in to your GTFO_DATA/MANAGED folder
 - Run inject.bat after starting the game.
