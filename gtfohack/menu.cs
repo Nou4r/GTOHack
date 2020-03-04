@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 using Globals;
 using SickDev.DevConsole;
 using SNetwork;
-
+using GameEvent;
 namespace gtfohack
 {
     public class menu : MonoBehaviour
@@ -580,6 +580,9 @@ namespace gtfohack
                 string data = activeExpeditionData.rundownKey.data;
                 string uniqueExpeditionKey = RundownManager.GetUniqueExpeditionKey(data, activeExpeditionData.tier, activeExpeditionData.expeditionIndex);
                 RundownManager.PlayerRundownProgressionFile.SetExpeditionFinished(data, uniqueExpeditionKey);
+                Global.IsQuitting = true;
+                GameEventManager.PostEvent(eGameEvent.game_quit, null, 0f, "");
+                SNet.SessionHub.LeaveHub(true);
                 return;
             }
         }
@@ -602,7 +605,8 @@ namespace gtfohack
 
         public void testfunc()
         {
-                      
+
+           
         }
         public void spawnsurvival()
         {
