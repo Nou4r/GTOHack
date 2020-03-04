@@ -292,6 +292,7 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad3)) bworldmenu = !bworldmenu;
                 if (Input.GetKeyDown(KeyCode.Keypad4)) bmultiplayermenu = !bmultiplayermenu;
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
+                if (Input.GetKeyDown(KeyCode.Keypad6)) Application.OpenURL("https://discord.gg/RMxCx63");
                 if (Input.GetKeyDown(KeyCode.F1)) 
                 {
 
@@ -594,6 +595,7 @@ namespace gtfohack
 
         void Completelevel()
         {
+            SNet_LobbyManager mgr = new SNet_LobbyManager();
             if (RundownManager.ActiveExpedition != null)
             {
                 pActiveExpedition activeExpeditionData = RundownManager.GetActiveExpeditionData();
@@ -604,6 +606,8 @@ namespace gtfohack
                 GameEventManager.PostEvent(eGameEvent.game_quit, null, 0f, "");
                 GameEventManager.PostEvent(eGameEvent.game_quit, PlayerManager.GetLocalPlayerAgent(), 0f, "");
                 SNet.SessionHub.LeaveHub(true);
+                mgr.LeaveLobby();
+                mgr.Lobby.Destroy();
                 return;
             }
         }
@@ -769,7 +773,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 135, 500, 200), "NoClip [F7]", fontSize);
             GUI.Button(new Rect((float)10, 155, 500, 200), "Restart Level [F8]", fontSize);
             GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9]", fontSize);
-            GUI.Button(new Rect((float)10, 195, 500, 200), "Full Bright [F10]", fontSize);
+           // GUI.Button(new Rect((float)10, 195, 500, 200), "Full Bright [F10]", fontSize);
             GUI.DragWindow();
         }
 
@@ -803,6 +807,8 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 55, 200, 200), "World Menu [Keypad 3]", fontSize);
             GUI.Button(new Rect((float)10, 75, 230, 200), "Multiplayer Menu [Keypad 4]", fontSize);
             GUI.Button(new Rect((float)10, 95, 230, 200), "Built-in Dev Menu [Keypad 5]", fontSize);
+            GUI.Button(new Rect((float)10, 95, 230, 200), "Join Discord [Keypad 6]", fontSize);
+
             GUI.DragWindow();
         }
 
@@ -812,14 +818,14 @@ namespace gtfohack
             if (openmenu)
             {
                 fontSize.fontSize = 18;
-                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "discord.gg/RMxCx63" + "\n" + "BY:GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
+                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n"  + "By: GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
                 GUI.Window(0, new Rect((float)menusx, menusy, 230, 130), Mainmenu, "MAIN MENU: [INSERT]");
             }
             else
             {
                 fontSize.fontSize = 18;
                 GUI.Label(new Rect((float)100f, 0f, 500f, 500f), "GTFO MENU V1.0 By GamePwnzer" + "\n" + "PRESS INSERT TO OPEN MENU", fontSize);
-                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "discord.gg/RMxCx63" + "\n" + "BY:GamePwnzer" + "\n" + "Press INSERT To Open" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
+                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "By: GamePwnzer" + "\n" + "Press INSERT To Open" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
             }
             if (bplayermenu)
             {
