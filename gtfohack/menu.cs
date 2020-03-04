@@ -595,19 +595,15 @@ namespace gtfohack
 
         void Completelevel()
         {
-            SNet_LobbyManager mgr = new SNet_LobbyManager();
             if (RundownManager.ActiveExpedition != null)
             {
                 pActiveExpedition activeExpeditionData = RundownManager.GetActiveExpeditionData();
                 string data = activeExpeditionData.rundownKey.data;
                 string uniqueExpeditionKey = RundownManager.GetUniqueExpeditionKey(data, activeExpeditionData.tier, activeExpeditionData.expeditionIndex);
                 RundownManager.PlayerRundownProgressionFile.SetExpeditionFinished(data, uniqueExpeditionKey);
-                Global.IsQuitting = true;
-                GameEventManager.PostEvent(eGameEvent.game_quit, null, 0f, "");
-                GameEventManager.PostEvent(eGameEvent.game_quit, PlayerManager.GetLocalPlayerAgent(), 0f, "");
-                SNet.SessionHub.LeaveHub(true);
-                mgr.LeaveLobby();
-                mgr.Lobby.Destroy();
+                GUIStyle fontSize = new GUIStyle(GUI.skin.GetStyle("label"));
+                fontSize.fontSize = 18;
+                GUI.Label(new Rect((float)(Screen.width / 2), (Screen.height / 2), 500f, 500f), "\n" + "\n" + "\n" + "Quit current mission to finish completion", fontSize);
                 return;
             }
         }
@@ -753,7 +749,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 95, 250, 200), "Change Enemy State [F5]: " + "[" + statenumber.ToString() + " ]", fontSize);
             GUI.Button(new Rect((float)10, 115, 250, 200), "Spawn Survival Wave [F6]", fontSize);
             GUI.Button(new Rect((float)10, 135, 250, 200), "TP Enemy to crosshair [F7]", fontSize);
-            GUI.Button(new Rect((float)10, 155, 250, 200), "Kill enemy in corssshair [MMB] [F8]: " + (bkillcorss ? "ON" : "OFF"), fontSize);
+            GUI.Button(new Rect((float)10, 155, 310, 200), "Kill enemy in corssshair [MMB] [F8]: " + (bkillcorss ? "ON" : "OFF"), fontSize);
             GUI.DragWindow();
         }
         void worldmenu(int windowID)
@@ -807,8 +803,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 55, 200, 200), "World Menu [Keypad 3]", fontSize);
             GUI.Button(new Rect((float)10, 75, 230, 200), "Multiplayer Menu [Keypad 4]", fontSize);
             GUI.Button(new Rect((float)10, 95, 230, 200), "Built-in Dev Menu [Keypad 5]", fontSize);
-            GUI.Button(new Rect((float)10, 95, 230, 200), "Join Discord [Keypad 6]", fontSize);
-
+            GUI.Button(new Rect((float)10, 115, 230, 200), "Join Discord [Keypad 6]", fontSize);
             GUI.DragWindow();
         }
 
@@ -819,7 +814,7 @@ namespace gtfohack
             {
                 fontSize.fontSize = 18;
                 GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n"  + "By: GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
-                GUI.Window(0, new Rect((float)menusx, menusy, 230, 130), Mainmenu, "MAIN MENU: [INSERT]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 230, 150), Mainmenu, "MAIN MENU: [INSERT]");
             }
             else
             {
@@ -833,7 +828,7 @@ namespace gtfohack
             }
             if (benemymenu)
             {
-                GUI.Window(0, new Rect((float)menusx, menusy, 240, 180), enemymenu, "Enemy Menu:[2]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 310, 180), enemymenu, "Enemy Menu:[2]");
             }
             if (bworldmenu)
             {
