@@ -32,7 +32,6 @@ bld/
 # Compiled Dynamic libraries
 *.so
 *.dylib
-#*.dll
 *.sqlite
 *.opendb
 *.pdb

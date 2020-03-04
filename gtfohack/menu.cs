@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿//discord.gg/RMxCx63
+using UnityEngine;
 using System;
 using Agents;
 using GameData;
@@ -27,6 +28,9 @@ namespace gtfohack
         }
         private void Start()
         {
+            Color clight = RenderSettings.ambientLight;
+            float cintens = lit.intensity;
+            Color ccolor = lit.color;
             Config.Init();
             Makecolors();
             GuiManager.WatermarkLayer.m_watermark.SetFPSVisible(true);
@@ -281,7 +285,12 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad3)) bworldmenu = !bworldmenu;
                 if (Input.GetKeyDown(KeyCode.Keypad4)) bmultiplayermenu = !bmultiplayermenu;
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
-                if (Input.GetKeyDown(KeyCode.F1)) { testfunc(); }
+                if (Input.GetKeyDown(KeyCode.F1)) 
+                {
+                    bfullbright = !bfullbright;
+                    int testInt = bfullbright ? 1 : 0; 
+                    testfunc(testInt);
+                }
                 if (Input.GetKeyDown(KeyCode.F2)) { hackstuff(); }
             }
             if (bworldmenu)
@@ -602,12 +611,23 @@ namespace gtfohack
             DevConsoleCommands.SNET_Capture("restart");
         }
 
-
-        public void testfunc()
+        public void testfunc(int lightstatus)
         {
-
-           
+            switch (lightstatus)
+            {
+                case 1:
+                    RenderSettings.ambientLight = new Color(0.95f, 0.95f, 0.95f);
+                    lit.color = Color.black;
+                    lit.intensity = 0f;
+                    break;
+                case 2:
+                    Color clight = RenderSettings.ambientLight;
+                    float cintens = lit.intensity;
+                    Color ccolor = lit.color;
+                    break;
+            }
         }
+
         public void spawnsurvival()
         {
             ushort num;
@@ -773,14 +793,14 @@ namespace gtfohack
             if (openmenu)
             {
                 fontSize.fontSize = 18;
-                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "BY:GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
+                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "discord.gg/RMxCx63" + "\n" + "BY:GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
                 GUI.Window(0, new Rect((float)menusx, menusy, 230, 130), Mainmenu, "MAIN MENU: [INSERT]");
             }
             else
             {
                 fontSize.fontSize = 18;
                 GUI.Label(new Rect((float)100f, 0f, 500f, 500f), "GTFO MENU V1.0 By GamePwnzer" + "\n" + "PRESS INSERT TO OPEN MENU", fontSize);
-                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "BY:GamePwnzer" + "\n" + "Press INSERT To Open" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
+                GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n" + "discord.gg/RMxCx63" + "\n" + "BY:GamePwnzer" + "\n" + "Press INSERT To Open" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
             }
             if (bplayermenu)
             {
@@ -888,6 +908,7 @@ namespace gtfohack
         public bool bhighjump = false;
         public bool bgenem = false;
         public bool bfreeze = true;
+        public bool bfullbright = false;
         bool testbool = false;
         public bool btp = false;
         public bool freecam = false;
@@ -915,6 +936,8 @@ namespace gtfohack
         private Rect aimbotWindowRect = new Rect(300f, 100f, 235f, 205f);
         private Rect filterWindowRect = new Rect(550f, 100f, 235f, 275f);
         private Rect miscWindowRect = new Rect(800f, 100f, 235f, 205f);
+
+        Light lit = new Light();
         Camera MainCamera = Camera.main;
         Event e = Event.current;
         EnemySync esync = new EnemySync();
