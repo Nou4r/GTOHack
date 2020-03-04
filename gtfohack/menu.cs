@@ -293,9 +293,10 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad4)) bmultiplayermenu = !bmultiplayermenu;
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
                 if (Input.GetKeyDown(KeyCode.Keypad6)) Application.OpenURL("https://discord.gg/RMxCx63");
+                if (Input.GetKeyDown(KeyCode.Keypad7)) bkickmenu = !bkickmenu;
                 if (Input.GetKeyDown(KeyCode.F1)) 
                 {
-
+                    //testfunc();
                 }
                 if (Input.GetKeyDown(KeyCode.F2)) { hackstuff(); }
             }
@@ -376,6 +377,12 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.F6)) spawnsurvival();
                 if (Input.GetKeyDown(KeyCode.F7)) telebadguys();
                 if (Input.GetKeyDown(KeyCode.F8)) bkillcorss = !bkillcorss;
+            }
+            if (bkickmenu)
+            {
+                if (Input.GetKeyDown(KeyCode.F1)) kickplayer(1);
+                if (Input.GetKeyDown(KeyCode.F2)) kickplayer(2);
+                if (Input.GetKeyDown(KeyCode.F3)) kickplayer(3);
             }
             if (fastspeed) Time.timeScale = 3f;
             else Time.timeScale = 1f;
@@ -597,13 +604,11 @@ namespace gtfohack
         {
             if (RundownManager.ActiveExpedition != null)
             {
+                bneeedquit = true;
                 pActiveExpedition activeExpeditionData = RundownManager.GetActiveExpeditionData();
                 string data = activeExpeditionData.rundownKey.data;
                 string uniqueExpeditionKey = RundownManager.GetUniqueExpeditionKey(data, activeExpeditionData.tier, activeExpeditionData.expeditionIndex);
                 RundownManager.PlayerRundownProgressionFile.SetExpeditionFinished(data, uniqueExpeditionKey);
-                GUIStyle fontSize = new GUIStyle(GUI.skin.GetStyle("label"));
-                fontSize.fontSize = 18;
-                GUI.Label(new Rect((float)(Screen.width / 2), (Screen.height / 2), 500f, 500f), "\n" + "\n" + "\n" + "Quit current mission to finish completion", fontSize);
                 return;
             }
         }
@@ -623,10 +628,21 @@ namespace gtfohack
             DevConsoleCommands.SNET_Capture("restart");
         }
         
-
-        public void testing()
+        public void Getplayers()
         {
+            pnames.Add(SNet.Slots.GetPlayerInSlot(0).NickName);
+            pnames.Add(SNet.Slots.GetPlayerInSlot(1).NickName);
+            pnames.Add(SNet.Slots.GetPlayerInSlot(2).NickName);
+            pnames.Add(SNet.Slots.GetPlayerInSlot(3).NickName);
+        }
 
+        public void kickplayer(int playerslot)
+        {
+            SNet.SessionHub.KickPlayer(SNet.Slots.GetPlayerInSlot(playerslot));
+            SNet.SessionHub.RemovePlayerFromSession(SNet.Slots.GetPlayerInSlot(playerslot), false);
+            pSessionMemberStateChange data = default(pSessionMemberStateChange);
+            data.player.SetPlayer(SNet.Slots.GetPlayerInSlot(playerslot));
+            data.type = SessioMemberChangeType.Kicked;
         }
         public void fullbright(int lightstatus)
         {
@@ -768,7 +784,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 115, 500, 200), "Break Down Door in crosshairs [F6]", fontSize);
             GUI.Button(new Rect((float)10, 135, 500, 200), "NoClip [F7]", fontSize);
             GUI.Button(new Rect((float)10, 155, 500, 200), "Restart Level [F8]", fontSize);
-            GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9]", fontSize);
+            GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9][Exit Lobby]", fontSize);
            // GUI.Button(new Rect((float)10, 195, 500, 200), "Full Bright [F10]", fontSize);
             GUI.DragWindow();
         }
@@ -804,17 +820,46 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 75, 230, 200), "Multiplayer Menu [Keypad 4]", fontSize);
             GUI.Button(new Rect((float)10, 95, 230, 200), "Built-in Dev Menu [Keypad 5]", fontSize);
             GUI.Button(new Rect((float)10, 115, 230, 200), "Join Discord [Keypad 6]", fontSize);
+            GUI.Button(new Rect((float)10, 135, 300, 200), "Kick Players (HOST) [Keypad 7]", fontSize);
             GUI.DragWindow();
         }
+        void Kickmenu(int windowID)
+        {
+            Color backgroundColor = new Color(0, 0f, 0, 0f);
+            GUI.color = new Color(1, 1, 1, 1);
+            GUI.contentColor = Color.white;
+            GUI.backgroundColor = backgroundColor;
+            GUIStyle fontSize = new GUIStyle(GUI.skin.GetStyle("label"));
+            fontSize.fontSize = 16;
+            GUI.contentColor = Color.white;
+            if (SNet.Slots.GetPlayerInSlot(1) == null)
+            {
+                GUI.Button(new Rect((float)10, 15, 200, 200), "Need more players in game", fontSize);
+            }
+            else
+            {
+                GUI.Button(new Rect((float)10, 15, 300, 200), "Kick: " + SNet.Slots.GetPlayerInSlot(1).NickName + " [F1]", fontSize);
+                GUI.Button(new Rect((float)10, 35, 300, 200), "Kick: " + SNet.Slots.GetPlayerInSlot(2).NickName + " [F2]", fontSize);
+                GUI.Button(new Rect((float)10, 55, 300, 200), "Kick: " + SNet.Slots.GetPlayerInSlot(3).NickName + " [F3]", fontSize);
+            }
+        }
 
-        private void OnGUI()
+            private void OnGUI()
         {//x,y,width,height
             GUIStyle fontSize = new GUIStyle(GUI.skin.GetStyle("label"));
+            fontSize.fontSize = 18;
+            //if (SNet.Slots.GetPlayerInSlot(0) != null)
+            //{
+            //    fontSize.fontSize = 15;
+            //    GUI.Label(new Rect((float)100f, 100f, 500f, 500f), "Slot[0] :"+SNet.Slots.GetPlayerInSlot(0).NickName + ": " + (SNet.Slots.GetPlayerInSlot(0).IsMaster ? "HOST" : ""), fontSize);
+            //    GUI.Label(new Rect((float)100f, 120f, 500f, 500f), "Slot[1] :"+SNet.Slots.GetPlayerInSlot(1).NickName + ": " + (SNet.Slots.GetPlayerInSlot(1).IsMaster ? "HOST" : ""), fontSize);
+            //    GUI.Label(new Rect((float)100f, 140f, 500f, 500f), "Slot[2] :"+SNet.Slots.GetPlayerInSlot(2).NickName + ": " + (SNet.Slots.GetPlayerInSlot(2).IsMaster ? "HOST" : ""), fontSize);
+            //    GUI.Label(new Rect((float)100f, 160f, 500f, 500f), "Slot[3] :"+SNet.Slots.GetPlayerInSlot(3).NickName + ": " + (SNet.Slots.GetPlayerInSlot(3).IsMaster ? "HOST" : ""), fontSize);
+            //}
             if (openmenu)
             {
-                fontSize.fontSize = 18;
                 GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n"  + "By: GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
-                GUI.Window(0, new Rect((float)menusx, menusy, 230, 150), Mainmenu, "MAIN MENU: [INSERT]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 270, 170), Mainmenu, "MAIN MENU: [INSERT]");
             }
             else
             {
@@ -837,6 +882,10 @@ namespace gtfohack
             if (bmultiplayermenu)
             {
                 GUI.Window(0, new Rect((float)menusx, menusy, 240, 160), Multiplayermenu, "MP Menu:[4]");
+            }
+            if (bkickmenu)
+            {
+                GUI.Window(0, new Rect((float)menusx, menusy, 240, 220), Kickmenu, "Kick Players:[7]"); 
             }
         }
         public void Goammo()
@@ -931,6 +980,7 @@ namespace gtfohack
         public bool btp = false;
         public bool freecam = false;
         public bool benemymarkers = false;
+        public bool bkickmenu = false;
         float menusx = 100f;
         float menusy = 70f;
         public int healthBarLength;
@@ -947,11 +997,13 @@ namespace gtfohack
         public bool devmenu = false;
         public int statenumber;
         public bool ignoreyou;
+        public bool bneeedquit = false;
         public int voicenum;
         private Rect espWindowRect = new Rect(50f, 100f, 235f, 275f);
         private Rect aimbotWindowRect = new Rect(300f, 100f, 235f, 205f);
         private Rect filterWindowRect = new Rect(550f, 100f, 235f, 275f);
         private Rect miscWindowRect = new Rect(800f, 100f, 235f, 205f);
+        List<string> pnames = new List<string>();
 
         Light lit = new Light();
         Camera MainCamera = Camera.main;
