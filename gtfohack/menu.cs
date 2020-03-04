@@ -277,6 +277,13 @@ namespace gtfohack
                     }
                 }
             }
+            if (bkillcorss)
+            {
+                if (Input.GetMouseButtonDown(2))
+                {
+                    killincrosshairs();
+                }
+            }
             if (openmenu)
             {
 
@@ -363,6 +370,7 @@ namespace gtfohack
                 }
                 if (Input.GetKeyDown(KeyCode.F6)) spawnsurvival();
                 if (Input.GetKeyDown(KeyCode.F7)) telebadguys();
+                if (Input.GetKeyDown(KeyCode.F8)) bkillcorss = !bkillcorss;
             }
             if (fastspeed) Time.timeScale = 3f;
             else Time.timeScale = 1f;
@@ -511,9 +519,7 @@ namespace gtfohack
 
         public void getenemy()
         {
-            EnemyGroup eehh;
             EnemyAI dsdds = new EnemyAI();
-            int num = 0;
             for (int i = dsdds.m_group.Members.Count - 1; i > -1; i--)
             {
                 EnemyAgent bg = dsdds.m_group.Members[i];
@@ -563,6 +569,7 @@ namespace gtfohack
                 }
                 if (enemyAI != null)
                 {
+                    enemyAI.m_enemyAgent.Damage.Health = 0f;
                     enemyAI.m_enemyAgent.Damage.InstantDead(true);
                 }
             }
@@ -591,6 +598,7 @@ namespace gtfohack
                 RundownManager.PlayerRundownProgressionFile.SetExpeditionFinished(data, uniqueExpeditionKey);
                 Global.IsQuitting = true;
                 GameEventManager.PostEvent(eGameEvent.game_quit, null, 0f, "");
+                GameEventManager.PostEvent(eGameEvent.game_quit, PlayerManager.GetLocalPlayerAgent(), 0f, "");
                 SNet.SessionHub.LeaveHub(true);
                 return;
             }
@@ -610,7 +618,12 @@ namespace gtfohack
         {
             DevConsoleCommands.SNET_Capture("restart");
         }
+        
 
+        public void testing()
+        {
+
+        }
         public void testfunc(int lightstatus)
         {
             switch (lightstatus)
@@ -732,6 +745,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 95, 250, 200), "Change Enemy State [F5]: " + "[" + statenumber.ToString() + " ]", fontSize);
             GUI.Button(new Rect((float)10, 115, 250, 200), "Spawn Survival Wave [F6]", fontSize);
             GUI.Button(new Rect((float)10, 135, 250, 200), "TP Enemy to crosshair [F7]", fontSize);
+            GUI.Button(new Rect((float)10, 155, 250, 200), "Kill enemy in corssshair [MMB] [F8]: " + (bkillcorss ? "ON" : "OFF"), fontSize);
             GUI.DragWindow();
         }
         void worldmenu(int windowID)
@@ -804,13 +818,11 @@ namespace gtfohack
             }
             if (bplayermenu)
             {
-
                 GUI.Window(0, new Rect((float)menusx, menusy, 300, 220), Playermenu, "Player Menu:[1]");
             }
             if (benemymenu)
             {
- 
-                GUI.Window(0, new Rect((float)menusx, menusy, 240, 160), enemymenu, "Enemy Menu:[2]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 240, 180), enemymenu, "Enemy Menu:[2]");
             }
             if (bworldmenu)
             {
@@ -909,14 +921,12 @@ namespace gtfohack
         public bool bgenem = false;
         public bool bfreeze = true;
         public bool bfullbright = false;
-        bool testbool = false;
+        public bool bkillcorss = false;
         public bool btp = false;
         public bool freecam = false;
         public bool benemymarkers = false;
         float menusx = 100f;
         float menusy = 70f;
-        float menuheight = 300f;
-        float menuwidth = 300f;
         public int healthBarLength;
         public int thetestalive;
         public float maxexprange = 100f;
@@ -966,13 +976,6 @@ namespace gtfohack
         public Rect enemystatsconsole = new Rect(400, 100, 200, 300);
         Agent agag = new Agent();
         ModelData mdata = new ModelData();
-        EnemyGroup enemygroup;
-        EnemyAgent enemyagent;
-        PlayerAgent playerAgent;
-        GuiManager guiManager;
-        RundownManager rundownmanager;
-        PlayerBackpackManager playerBackpackManager;
-        ItemEquippable itemEquippable;
         public EnemyAI[] enemyAIarray = FindObjectsOfType(typeof(EnemyAI)) as EnemyAI[];
         public PlayerAgent[] playerarray;
         public EnemyAgent[] EnemyAgentArray = FindObjectsOfType(typeof(EnemyAgent)) as EnemyAgent[];
@@ -995,25 +998,12 @@ namespace gtfohack
         public Color[] magicmarker = new Color[90];
         public EnemyAgent[] magicnames = new EnemyAgent[90];
         public Agent[] dmgr = new Agent[100];
-        EnemyAgent[] thebadguys;
-        private GameObject GameObjectHolder;
-
-        private IEnumerable<PlayerAgent> _playerInfo;
-        private IEnumerable<EnemyAgent> _enemyinfo;
-        private IEnumerable<Loot> _containers;
-        private IEnumerable<LootSpawnManager> _item;
-
         protected float _infoUpdateInterval = 10f;
-
         [DllImport("user32.dll")]
         static extern bool GetCursorPos(out POINT lpPoint);
         [DllImport("user32.dll")]
         static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
         private const int MOUSEEVENTF_MOVE = 0x0001;
-
-
-        
-
 
 }
 

@@ -33,6 +33,7 @@ bld/
 *.so
 *.dylib
 *.sqlite
+*.dll
 *.opendb
 *.pdb
 *.tlog
