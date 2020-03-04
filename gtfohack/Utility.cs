@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-
 namespace gtfohack
 {
     public static class Utility
@@ -16,7 +15,6 @@ namespace gtfohack
         {
             DrawLine(lineStart, lineEnd, color, 1);
         }
-
         public static void DrawBox(float x, float y, float w, float h, Color color)
         {
             menu gfg = new menu();
@@ -25,7 +23,6 @@ namespace gtfohack
             DrawLine(new Vector2(x + w, y), new Vector2(x + w, y + h), color);
             DrawLine(new Vector2(x, y + h), new Vector2(x + w, y + h), color);
         }
-
         public static void DrawLine(Vector2 lineStart, Vector2 lineEnd, Color color, int thickness)
         {
             menu gfg = new menu();
@@ -39,7 +36,6 @@ namespace gtfohack
             }
             DrawLineStretched(lineStart, lineEnd, _coloredLineTexture, thickness);
         }
-
         public static void DrawLineStretched(Vector2 lineStart, Vector2 lineEnd, Texture2D texture, int thickness)
         {
             menu gfg = new menu();
@@ -60,13 +56,11 @@ namespace gtfohack
             GUI.DrawTexture(new Rect(lineStart.x, lineStart.y - (float)yOffset, vector.magnitude, (float)thickness), texture);
             GUIUtility.RotateAroundPivot(-pivot, lineStart);
         }
-
         public static void DrawLine(Vector2 lineStart, Vector2 lineEnd, Texture2D texture)
         {
             menu gfg = new menu();
             DrawLine(lineStart, lineEnd, texture, 1);
         }
-
         public static void DrawLine(Vector2 lineStart, Vector2 lineEnd, Texture2D texture, int thickness)
         {
             menu gfg = new menu();
@@ -81,7 +75,6 @@ namespace gtfohack
             {
                 thickness = 1;
             }
-
             int num2 = (int)Mathf.Ceil((float)(thickness / 2));
             var rect = new Rect(lineStart.x, lineStart.y - (float)num2, Vector2.Distance(lineStart, lineEnd), (float)thickness);
             GUIUtility.RotateAroundPivot(pivot, lineStart);
