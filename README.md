@@ -8,9 +8,9 @@ Add the dll's in the GTFO_DATA/MANAGED folder as references in the project. Comp
 Precompiled dll here: https://gitlab.com/CainPwnzer/gtfohack/-/releases
 drop the file in the GTFO_DATA/MANAGED folder and inject using any mono injector as follows:
 
-Namespace: gtfohack
-class name: Loader
-Method name: Load
+- Namespace: gtfohack
+- class name: Loader
+- Method name: Load
 
 I recommend this injector:
 https://gitlab.com/CainPwnzer/SharpMonoInjector
