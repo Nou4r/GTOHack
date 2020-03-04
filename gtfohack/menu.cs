@@ -294,9 +294,7 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
                 if (Input.GetKeyDown(KeyCode.F1)) 
                 {
-                    bfullbright = !bfullbright;
-                    int testInt = bfullbright ? 1 : 0; 
-                    testfunc(testInt);
+
                 }
                 if (Input.GetKeyDown(KeyCode.F2)) { hackstuff(); }
             }
@@ -311,6 +309,12 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.F7)) noclip();
                 if (Input.GetKeyDown(KeyCode.F8)) restatlevel();
                 if (Input.GetKeyDown(KeyCode.F9)) Completelevel();
+                if (Input.GetKeyDown(KeyCode.F10))
+                {
+                    bfullbright = !bfullbright;
+                    int testInt = bfullbright ? 1 : 0;
+                    fullbright(testInt);
+                }
 
             }
             if (bmultiplayermenu)
@@ -624,7 +628,7 @@ namespace gtfohack
         {
 
         }
-        public void testfunc(int lightstatus)
+        public void fullbright(int lightstatus)
         {
             switch (lightstatus)
             {
@@ -765,6 +769,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 135, 500, 200), "NoClip [F7]", fontSize);
             GUI.Button(new Rect((float)10, 155, 500, 200), "Restart Level [F8]", fontSize);
             GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9]", fontSize);
+            GUI.Button(new Rect((float)10, 195, 500, 200), "Full Bright [F10]", fontSize);
             GUI.DragWindow();
         }
 
@@ -826,7 +831,7 @@ namespace gtfohack
             }
             if (bworldmenu)
             {
-                GUI.Window(0, new Rect((float)menusx, menusy, 300, 200), worldmenu, "World Menu:[3]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 300, 220), worldmenu, "World Menu:[3]");
             }
             if (bmultiplayermenu)
             {
