@@ -17,6 +17,7 @@ using Globals;
 using SickDev.DevConsole;
 using SNetwork;
 using GameEvent;
+using GuiMenu;
 namespace gtfohack
 {
     public class menu : MonoBehaviour
@@ -604,11 +605,12 @@ namespace gtfohack
         {
             if (RundownManager.ActiveExpedition != null)
             {
-                bneeedquit = true;
                 pActiveExpedition activeExpeditionData = RundownManager.GetActiveExpeditionData();
                 string data = activeExpeditionData.rundownKey.data;
                 string uniqueExpeditionKey = RundownManager.GetUniqueExpeditionKey(data, activeExpeditionData.tier, activeExpeditionData.expeditionIndex);
                 RundownManager.PlayerRundownProgressionFile.SetExpeditionFinished(data, uniqueExpeditionKey);
+                //GameStateManager.ChangeState(eGameStateName.AfterLevel);
+                GameStateManager.ChangeState(eGameStateName.ExpeditionSuccess);
                 return;
             }
         }
@@ -784,7 +786,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 115, 500, 200), "Break Down Door in crosshairs [F6]", fontSize);
             GUI.Button(new Rect((float)10, 135, 500, 200), "NoClip [F7]", fontSize);
             GUI.Button(new Rect((float)10, 155, 500, 200), "Restart Level [F8]", fontSize);
-            GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9][Exit Lobby]", fontSize);
+            GUI.Button(new Rect((float)10, 175, 500, 200), "Complete Level [F9]", fontSize);
            // GUI.Button(new Rect((float)10, 195, 500, 200), "Full Bright [F10]", fontSize);
             GUI.DragWindow();
         }
