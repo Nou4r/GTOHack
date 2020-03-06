@@ -18,6 +18,8 @@ using SickDev.DevConsole;
 using SNetwork;
 using GameEvent;
 using GuiMenu;
+
+using Num = System.Numerics;
 namespace gtfohack
 {
     public class menu : MonoBehaviour
@@ -32,7 +34,6 @@ namespace gtfohack
             Color clight = RenderSettings.ambientLight;
             float cintens = lit.intensity;
             Color ccolor = lit.color;
-            Config.Init();
             Makecolors();
             GuiManager.WatermarkLayer.m_watermark.SetFPSVisible(true);
         }
@@ -259,6 +260,7 @@ namespace gtfohack
 
             GuiManager.WatermarkLayer.m_watermark.SetFPSVisible(true);
             if (Input.GetKeyDown(KeyCode.Delete)) Loader.Unload();
+            if (Input.GetKeyDown(KeyCode.Home)) btestmenu = !btestmenu;
             if (Input.GetKeyDown(KeyCode.Insert))
             {
                 openmenu = !openmenu;
@@ -287,7 +289,7 @@ namespace gtfohack
             }
             if (openmenu)
             {
-
+                if (Input.GetKeyDown(KeyCode.KeypadPlus)) itemnumb += 1;
                 if (Input.GetKeyDown(KeyCode.Keypad1)) bplayermenu = !bplayermenu;
                 if (Input.GetKeyDown(KeyCode.Keypad2)) benemymenu = !benemymenu;
                 if (Input.GetKeyDown(KeyCode.Keypad3)) bworldmenu = !bworldmenu;
@@ -295,9 +297,9 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
                 if (Input.GetKeyDown(KeyCode.Keypad6)) Application.OpenURL("https://discord.gg/RMxCx63");
                 if (Input.GetKeyDown(KeyCode.Keypad7)) bkickmenu = !bkickmenu;
-                if (Input.GetKeyDown(KeyCode.F1)) 
+                if (Input.GetKeyDown(KeyCode.F1))
                 {
-                    //testfunc();
+                    testfunc();
                 }
                 if (Input.GetKeyDown(KeyCode.F2)) { hackstuff(); }
             }
@@ -340,10 +342,11 @@ namespace gtfohack
                 {
                     Weapon.SuperWeapons = !Weapon.SuperWeapons;
                     foreach (PlayerAgent ddd in FindObjectsOfType(typeof(PlayerAgent)) as PlayerAgent[])
-                    { if(!ddd.IsLocallyOwned)
-                            if(Weapon.SuperWeapons)
-                        ddd.PlayerData.friendlyFireMulti = 0f;
-                    else ddd.PlayerData.friendlyFireMulti = .5f;
+                    {
+                        if (!ddd.IsLocallyOwned)
+                            if (Weapon.SuperWeapons)
+                                ddd.PlayerData.friendlyFireMulti = 0f;
+                            else ddd.PlayerData.friendlyFireMulti = .5f;
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.F6)) PlayerBackpackManager.PickupHealthRel(4f);
@@ -352,7 +355,7 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.F9))
                 {
                     thingy += 100;
-                     bhighjump = !bhighjump;
+                    bhighjump = !bhighjump;
                     if (bhighjump)
                         Highjump(30f);
                     else Highjump(10f);
@@ -360,7 +363,8 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.F10)) reviveself();
             }
             if (benemymenu)
-            {   if (Input.GetKeyDown(KeyCode.F1)) foamall();
+            {
+                if (Input.GetKeyDown(KeyCode.F1)) foamall();
                 if (Input.GetKeyDown(KeyCode.F2))
                 {
                     if (clickNumber >= 2)
@@ -378,6 +382,7 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.F6)) spawnsurvival();
                 if (Input.GetKeyDown(KeyCode.F7)) telebadguys();
                 if (Input.GetKeyDown(KeyCode.F8)) bkillcorss = !bkillcorss;
+                if (Input.GetKeyDown(KeyCode.F9)) spawnenemycroshairs();
             }
             if (bkickmenu)
             {
@@ -389,7 +394,6 @@ namespace gtfohack
             else Time.timeScale = 1f;
             if (infammo) Goammo();
         }
-
         public void freezeothers(bool bfreeze)
         {
             foreach (PlayerAgent ddd in FindObjectsOfType(typeof(PlayerAgent)) as PlayerAgent[])
@@ -398,17 +402,68 @@ namespace gtfohack
                 {
                     ddd.Damage.GlueDamage(100000000000000000000f);
                     ddd.gameObject.SetActive(bfreeze);
-                    ddd.Inventory.Owner.Alive = !bfreeze;
-                    ddd.Alive = !bfreeze;
+                    ddd.Inventory.Owner.Alive = bfreeze;
+                    ddd.Alive = bfreeze;
                     ddd.Damage.GrabbedByTank = !bfreeze;
-                    ddd.IsEnabled = !bfreeze;
-                    ddd.IsBeingDespawned = bfreeze;
-                    ddd.IsBeingDestroyed = bfreeze;
+                    ddd.IsEnabled = bfreeze;
+                    ddd.IsBeingDespawned = !bfreeze;
+                    ddd.IsBeingDestroyed = !bfreeze;
 
                 }
             }
         }
 
+        void reviveall()
+        {
+            Agents.AgentReplicatedActions.PlayerReviveAction(PlayerManager.GetLocalPlayerAgent(), PlayerManager.GetLocalPlayerAgent(), Vector3.zero);
+            Agents.AgentReplicatedActions.PlayerReviveAction(null, PlayerManager.GetLocalPlayerAgent(), Vector3.zero);
+
+            
+        }
+        void spawnenemycroshairs()
+        {
+            Ray screenRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            RaycastHit hit;
+            if (Physics.Raycast(screenRay, out hit, 1000))
+            {
+                Vector3 tpPos = hit.point;
+                //tpPos.y += 1;
+                foreach (uint bg in enemytype)
+                {
+                    EnemyAllocator.ResetAllowedToSpawn();
+                    EnemyAllocator.Current.SpawnEnemy(bg, PlayerManager.GetLocalPlayerAgent().CourseNode, AgentMode.Hibernate, tpPos, PlayerManager.GetLocalPlayerAgent().Rotation, null);
+                }
+                //EnemyAllocator.Current.SpawnEnemy(GD.EnemyGroup.Floaters, PlayerManager.GetLocalPlayerAgent().CourseNode, AgentMode.Hibernate, tpPos, PlayerManager.GetLocalPlayerAgent().Rotation, null);
+                //EnemyAllocator.Current.SpawnEnemy(GD.EnemyGroup.MixGroup_a, PlayerManager.GetLocalPlayerAgent().CourseNode, AgentMode.Hibernate, tpPos, PlayerManager.GetLocalPlayerAgent().Rotation, null);
+
+            }
+        }
+
+        void spawnitems()
+        {
+            pItemData data = default(pItemData);
+            data.itemID_gearCRC = GD.Item.AmmoPackWeapon;
+            data.ammo = 100f;
+            ItemSpawnManager.SpawnItem(GD.Item.AmmoPackWeapon, ItemMode.Pickup, PlayerManager.GetLocalPlayerAgent().Position, PlayerManager.GetLocalPlayerAgent().Rotation, true, data, null);
+        }
+        void testfunc()
+        {
+            // PlayerBackpackManager.LocalBackpack.SpawnAndEquipItem(102U, InventorySlot.ResourcePack);
+            //// PlayerBackpackManager.LocalBackpack.AmmoStorage.SetupAmmoType(AmmoType.ResourcePackRel, 0f, 100, 100f);
+            // PlayerBackpackManager.LocalBackpack.AmmoStorage.SetAmmo(AmmoType.ResourcePackRel, 100f);
+
+
+            Ray screenRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            RaycastHit hit;
+            if (Physics.Raycast(screenRay, out hit, 1000))
+            {
+                Vector3 tpPos = hit.point;
+                EnemyAllocator.ResetAllowedToSpawn();
+                EnemyAllocator.Current.SpawnEnemy(itemnumb, PlayerManager.GetLocalPlayerAgent().CourseNode, AgentMode.Hibernate, tpPos, PlayerManager.GetLocalPlayerAgent().Rotation, null);
+            }
+
+            itemnumb++;
+        }
         public void foamall()
         {
             GlueVolumeDesc vol;
@@ -668,20 +723,8 @@ namespace gtfohack
             ushort num;
             //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 1U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
             //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 2U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 3U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
-            Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 4U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 1U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNode);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 2U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNode);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 3U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNode);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 4U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNode);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 1U, 5U, out num, SurvivalWaveSpawnType.ClosestToSuppliedNodeButNoBetweenPlayers);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 2U, 5U, out num, SurvivalWaveSpawnType.ClosestToSuppliedNodeButNoBetweenPlayers);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 3U, 5U, out num, SurvivalWaveSpawnType.ClosestToSuppliedNodeButNoBetweenPlayers);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 4U, 5U, out num, SurvivalWaveSpawnType.ClosestToSuppliedNodeButNoBetweenPlayers);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 1U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNodeZone);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 2U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNodeZone);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 3U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNodeZone);
-            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 4U, 5U, out num, SurvivalWaveSpawnType.InSuppliedCourseNodeZone);
+            Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 3U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
+            //Mastermind.Current.TriggerSurvivalWave(((PlayerAgent)SNet.LocalPlayer.PlayerAgent).CourseNode, 4U, 5U, out num, SurvivalWaveSpawnType.InRelationToClosestAlivePlayer);
             //telebadguys();
 
             //System.Random r = new System.Random();
@@ -768,7 +811,7 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 115, 250, 200), "Spawn Survival Wave [F6]", fontSize);
             GUI.Button(new Rect((float)10, 135, 250, 200), "TP Enemy to crosshair [F7]", fontSize);
             GUI.Button(new Rect((float)10, 155, 310, 200), "Kill enemy in corssshair [MMB] [F8]: " + (bkillcorss ? "ON" : "OFF"), fontSize);
-            GUI.DragWindow();
+            GUI.Button(new Rect((float)10, 175, 310, 200), "Spawn enemies in Crosshairs [F9]", fontSize);
         }
         void worldmenu(int windowID)
         {
@@ -806,6 +849,15 @@ namespace gtfohack
             GUI.Button(new Rect((float)10, 75, 350, 200), "Decrease Team Health [F5]", fontSize);
             GUI.Button(new Rect((float)10, 95, 350, 200), "Team Chat Messages [F6]", fontSize);
             GUI.Button(new Rect((float)10, 115, 350, 200), "Sound Off [F7]", fontSize);
+        }
+
+        void testmenu(int windowID)
+        {
+            if (GUI.Button(new Rect((float)10, 15, 20, 20), "Godmode"))
+            { 
+                thingy++;
+            }
+            GUI.DragWindow();
         }
         void Mainmenu(int windowID)
         {
@@ -861,7 +913,7 @@ namespace gtfohack
             if (openmenu)
             {
                 GuiManager.WatermarkLayer.m_watermark.UpdateFPS("GTFO MENU V1.0" + "\n"  + "By: GamePwnzer" + "\n" + "Shoutz To:" + "\n" + "CAIN532" + "\n" + "DEV0PS" + "\n" + "KRANK" + "\n" + "\n" + "\n" + "\n" + Clock.SmoothFPS.ToString("N0"));
-                GUI.Window(0, new Rect((float)menusx, menusy, 270, 170), Mainmenu, "MAIN MENU: [INSERT]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 270, 200), Mainmenu, "MAIN MENU: [INSERT]" + itemnumb);
             }
             else
             {
@@ -875,7 +927,7 @@ namespace gtfohack
             }
             if (benemymenu)
             {
-                GUI.Window(0, new Rect((float)menusx, menusy, 310, 180), enemymenu, "Enemy Menu:[2]");
+                GUI.Window(0, new Rect((float)menusx, menusy, 310, 200), enemymenu, "Enemy Menu:[2]");
             }
             if (bworldmenu)
             {
@@ -888,6 +940,10 @@ namespace gtfohack
             if (bkickmenu)
             {
                 GUI.Window(0, new Rect((float)menusx, menusy, 240, 220), Kickmenu, "Kick Players:[7]"); 
+            }
+            if (btestmenu)
+            {
+                GUI.Window(0, new Rect((float)menusx, menusy, 300, 220), testmenu, "TEST MENU" + thingy);
             }
         }
         public void Goammo()
@@ -953,8 +1009,11 @@ namespace gtfohack
             Utility.DrawLine(new Vector2(960, 1080), new Vector2(960, 0), Color.white);
             Utility.DrawLine(new Vector2(0, 540), new Vector2(1920, 540), Color.white);
         }
+        uint itemnumb = 1U;
         string[] chatstrings = { "You Suck!", "I WILL DDOS YOU", "I Suck", "I am new at this game", "What's your problem?", "I'm Going to HACK you!", "N00BS" };
         uint[] voices = { EVENTS.PLAY_00_INTRO_AMBIENCE_START, EVENTS.PLAY_01_FIRST_TEXT_APPEAR, EVENTS.PLAY_02_FIRST_SCARE, EVENTS.PLAY_03_VITAL_SIGN_SCAN, EVENTS.PLAY_04_DOS_TYPE_STARTUP, EVENTS.PLAY_05_INJECT_BUTTON_APPEAR, EVENTS.PLAY_06_MAIN_MENU_LAUNCH, EVENTS.PLAY_07_RUNDOWN_VISUALIZATION, EVENTS.PLAY_08_LOADOUT_APPEAR_PLAYER_1, EVENTS.PLAY_08_LOADOUT_APPEAR_PLAYER_2, EVENTS.PLAY_08_LOADOUT_APPEAR_PLAYER_3, EVENTS.PLAY_08_LOADOUT_APPEAR_PLAYER_4, EVENTS.PLAY_09_WAKE_UP_IN_HSU, EVENTS.PLAY_09A_HSU_VERTICAL_TRACK_START, EVENTS.PLAY_09B_HSU_VERTICAL_TRACK_STOP, EVENTS.PLAY_10_HSU_TILT_START, EVENTS.PLAY_11_HSU_TILT_STOP, EVENTS.PLAY_12_HSU_HATCH_OPEN, EVENTS.PLAY_12A_HSU_HATCH_CLAW_MOVEMENT, EVENTS.PLAY_13_HSU_LOAD_ARM_EXTEND, EVENTS.PLAY_14_HSU_LOAD_ARM_STOP, EVENTS.PLAY_15_ELEVATOR_RELEASE, EVENTS.PLAY_ACCIDENTALDISCHARGE01, EVENTS.PLAY_ADDRESSBISHOPIRRITATED01, EVENTS.PLAY_ADDRESSDAUDAIRRITATED01, EVENTS.PLAY_ADDRESSHACKETTIRRITATED01, EVENTS.PLAY_ADDRESSWOODSIRRITATED01, EVENTS.PLAY_AMMODEPLETEDB01, EVENTS.PLAY_AMMODEPLETEDREMINDERA01, EVENTS.PLAY_AMMODEPLETEDTAKINGDAMAGE01, EVENTS.PLAY_AMMORUNNINGLOW01_1A, EVENTS.PLAY_APEXDOORFIGHTANTICIPATION01, EVENTS.PLAY_APEXDOORSPOTA01, EVENTS.PLAY_APEXDOORSPOTB01, EVENTS.PLAY_APEXDOORTOELEVATORSPOTA01, EVENTS.PLAY_ATTRACTEDMONSTERSACCIDENT01, EVENTS.PLAY_ATTRACTEDMONSTERSINTENTIONAL01, EVENTS.PLAY_BIGSPACEENTER01, EVENTS.PLAY_BIOSCANENTER01, EVENTS.PLAY_BIOSCANFOUND01, EVENTS.PLAY_BIOSCANWORKINGA01, EVENTS.PLAY_BITBYPARASITESURPRISE1STA01, EVENTS.PLAY_BITBYPARASITESURPRISE1STB01, EVENTS.PLAY_BRIEFINGEND01, EVENTS.PLAY_BRIEFINGSTART01, EVENTS.PLAY_CAUGHTBYCEILINGTENTACLE, EVENTS.PLAY_CHARFDOWN01_1A, EVENTS.PLAY_CHARGDOWN01_1A, EVENTS.PLAY_CHARODOWN01_1A, EVENTS.PLAY_CHARTDOWN01_1A, EVENTS.PLAY_COMBATSTART01, EVENTS.PLAY_COMBATTALKGENERIC01, EVENTS.PLAY_COMMENTFINALEXPEDITIONITEM01_1A, EVENTS.PLAY_COMMENTFINALSEGMENTITEM01_1A, EVENTS.PLAY_COMMENTGOODPROGRESSION01_1A, EVENTS.PLAY_COMMENTGOODSTART01_1A, EVENTS.PLAY_COMMENTGOTOELEVATOR01_1A, EVENTS.PLAY_COMMENTGOTONODEDOOR01_1A, EVENTS.PLAY_COMMENTSURROUNDINGS01_1A, EVENTS.PLAY_COMMENTSURROUNDINGS01_2B, EVENTS.PLAY_COMMENTSURROUNDINGS02_1A, EVENTS.PLAY_COMMENTSURROUNDINGS02_2B, EVENTS.PLAY_COMMENTSURROUNDINGS03_1A, EVENTS.PLAY_COMMENTSURROUNDINGS03_2B, EVENTS.PLAY_COMMENTSURROUNDINGS04_1A, EVENTS.PLAY_COMMENTSURROUNDINGS05_1A, EVENTS.PLAY_COMMENTSURROUNDINGS05_2B, EVENTS.PLAY_COMMENTSURROUNDINGS06_1A, EVENTS.PLAY_COMMENTSURROUNDINGS06_2B, EVENTS.PLAY_COMMENTSURROUNDINGS06_3A, EVENTS.PLAY_COMMENTSURROUNDINGS07_1A, EVENTS.PLAY_COMMENTSURROUNDINGS07_2B, EVENTS.PLAY_COMMENTSURROUNDINGS07_3A, EVENTS.PLAY_COMMENTSURROUNDINGS07_4B, EVENTS.PLAY_COMMENTSURROUNDINGS07_5C, EVENTS.PLAY_CONSUMABLEDEPLETEDGENERIC01, EVENTS.PLAY_COUGHHARD01, EVENTS.PLAY_COUGHSOFT01, EVENTS.PLAY_COUNTFOUR01_1A, EVENTS.PLAY_COUNTLAST01_1A, EVENTS.PLAY_COUNTONE01_1A, EVENTS.PLAY_COUNTREMAININGFOUR01_1A, EVENTS.PLAY_COUNTREMAININGONE01_1A, EVENTS.PLAY_COUNTREMAININGTHREE01_1A, EVENTS.PLAY_COUNTREMAININGTWO01_1A, EVENTS.PLAY_COUNTTHREE01_1A, EVENTS.PLAY_COUNTTWO01_1A, EVENTS.PLAY_CUTLOCKFINAL, EVENTS.PLAY_CUTLOCKFIRST, EVENTS.PLAY_DARKAREAENTER01, EVENTS.PLAY_DARKAREALIGHTON01, EVENTS.PLAY_DATAMINEDONEGOTOEXIT01, EVENTS.PLAY_DATAMINEFINDTERMINAL01, EVENTS.PLAY_DATAMINEFOUNDTERMINAL01, EVENTS.PLAY_DEATHSCREAM01, EVENTS.PLAY_DECONUNITABOUTTOGRABA01, EVENTS.PLAY_DECONUNITABOUTTOGRABB01, EVENTS.PLAY_DECONUNITBRIEFINGA01, EVENTS.PLAY_DECONUNITBRIEFINGB01, EVENTS.PLAY_DECONUNITBRIEFINGC01, EVENTS.PLAY_DECONUNITBRIEFINGD01, EVENTS.PLAY_DECONUNITGRABBEDA01, EVENTS.PLAY_DECONUNITGRABBEDB01, EVENTS.PLAY_DECONUNITGRABBEDC01, EVENTS.PLAY_DECONUNITLEFTBEHIND01, EVENTS.PLAY_DOOROPEN01_1A, EVENTS.PLAY_DOOROPENING01, EVENTS.PLAY_DOWNEDNEEDINGHELP01, EVENTS.PLAY_ENCOUNTEROVERAVERAGE01_1A_01, EVENTS.PLAY_ENCOUNTEROVERBAD01_1A_02, EVENTS.PLAY_ENCOUNTEROVERGOOD01_1A, EVENTS.PLAY_ENCOUNTEROVERSCOUTA01, EVENTS.PLAY_EXPEDITIONSTARTDATAMINING, EVENTS.PLAY_EXPEDITIONSTARTGENERIC, EVENTS.PLAY_EXPEDITIONSTARTSCAVENGE, EVENTS.PLAY_EXPLORATIONLOST01_1A, EVENTS.PLAY_EXPLORATIONLOST01_2B, EVENTS.PLAY_EXPLORATIONLOST01_3C, EVENTS.PLAY_EXPLORATIONLOST01_4D, EVENTS.PLAY_EXPLORATIONWALKINGINCIRCLES01_1A, EVENTS.PLAY_EXPLORATIONWALKINGINCIRCLES01_2B, EVENTS.PLAY_EXPLORATIONWALKINGINCIRCLES01_3A, EVENTS.PLAY_EXPLORATIONWALKINGINCIRCLES01_4C, EVENTS.PLAY_FALLDAMAGEGRUNT01_1A, EVENTS.PLAY_FALLDAMAGEGRUNT01_2B, EVENTS.PLAY_FALLDAMAGEGRUNT01_3A, EVENTS.PLAY_FALLDAMAGEGRUNT01_4B, EVENTS.PLAY_FALLDAMAGEGRUNT01_5A, EVENTS.PLAY_FALLDAMAGEGRUNT02_4B, EVENTS.PLAY_FALLDAMAGEGRUNT02_5A, EVENTS.PLAY_FOLLOWHOLOPATH01, EVENTS.PLAY_FOUNDAMMO01, EVENTS.PLAY_FOUNDAMMOLITTLE01, EVENTS.PLAY_FOUNDAMMORESPONSEA01, EVENTS.PLAY_FOUNDARMORY01, EVENTS.PLAY_FOUNDENCRYPTIONKEYGENERIC01, EVENTS.PLAY_FOUNDENCRYPTIONKEYSUCCEEDING01, EVENTS.PLAY_FOUNDHEALTHSTATION01, EVENTS.PLAY_FOUNDHEALTHSTATIONRESPONSEA01, EVENTS.PLAY_FOUNDITEMGENERIC01, EVENTS.PLAY_FOUNDITEMSUCCEEDING01, EVENTS.PLAY_FOUNDMEDS01, EVENTS.PLAY_FOUNDMEDSLITTLE01, EVENTS.PLAY_FOUNDNODEDOOR01, EVENTS.PLAY_FOUNDRESOURCEBOX01, EVENTS.PLAY_FOUNDRESOURCELOCKER01, EVENTS.PLAY_FOUNDSCAV01, EVENTS.PLAY_FOUNDSECURITYPOST01, EVENTS.PLAY_FOUNDSTRONGBOX01, EVENTS.PLAY_FOUNDTHEITEMGENERIC01, EVENTS.PLAY_FRIENDLYFIREOUTBURST01, EVENTS.PLAY_GENERICDONE01, EVENTS.PLAY_GETPARASITE, EVENTS.PLAY_GETPARASITEREMOVED01, EVENTS.PLAY_GETPARASITEREMOVEDNOTALL01, EVENTS.PLAY_GETSHOTFREEFROMCEILINGTENTACLE01_1A, EVENTS.PLAY_GETSHOTFREEFROMCEILINGTENTACLE01_2B, EVENTS.PLAY_GLOTTALSTOP01, EVENTS.PLAY_GRABBEDBYTANK01, EVENTS.PLAY_GROUPBONDING01_1A, EVENTS.PLAY_GROUPBONDING01_2B, EVENTS.PLAY_GROUPBONDING01_3A, EVENTS.PLAY_GROUPBONDING01_4B, EVENTS.PLAY_GROUPBONDING01_5C, EVENTS.PLAY_GROUPBONDING01_6D, EVENTS.PLAY_GROUPISNOTTOGETHER, EVENTS.PLAY_HACKINGCORRECTFIRST01, EVENTS.PLAY_HACKINGCORRECTSECOND01, EVENTS.PLAY_HACKINGSUCCESSFULFLAWLESS01, EVENTS.PLAY_HACKINGSUCCESSFULPROBLEMATIC01, EVENTS.PLAY_HACKINGSUCCESSFULREGULAR01, EVENTS.PLAY_HACKINGWRONGFIRST01, EVENTS.PLAY_HACKINGWRONGSECOND01, EVENTS.PLAY_HACKINGWRONGTHIRD01, EVENTS.PLAY_HEALSPRAYAPPLYENEMY01, EVENTS.PLAY_HEALSPRAYAPPLYTEAMMATEA01, EVENTS.PLAY_HEARHUNTERGROUP01_1A, EVENTS.PLAY_HEARHUNTERGROUP01_2B, EVENTS.PLAY_HELDBYTANK01, EVENTS.PLAY_HELPTEAMMATEUP01, EVENTS.PLAY_HUSHIRRITATED01, EVENTS.PLAY_JUSTBEFOREELEVATORDROP01, EVENTS.PLAY_KILLEDSINGLEMONSTER01_1A, EVENTS.PLAY_LANDHARDONBACK01, EVENTS.PLAY_LIGHTSENSITIVEINSTRUCTIONSA01, EVENTS.PLAY_LIGHTSENSITIVEINSTRUCTIONSB01, EVENTS.PLAY_LOWHEALTHGRUNT01_1A, EVENTS.PLAY_LOWHEALTHLIMIT01, EVENTS.PLAY_LOWHEALTHTALKA01, EVENTS.PLAY_MANDOWNGENERIC01, EVENTS.PLAY_MAPPERFINISHED01_1A, EVENTS.PLAY_MODPITCHBLACKCOMMENT01_1A, EVENTS.PLAY_MONSTERDOWNGENERIC01_1A, EVENTS.PLAY_MONSTERSBREAKINGDOOR01_1A, EVENTS.PLAY_MONSTERSBROKEDOOR01_1A, EVENTS.PLAY_MONSTERWAVECOMINGALREADYFIGHTING01, EVENTS.PLAY_MOTIONDETECTORFEWENEMIES01_1A, EVENTS.PLAY_MOTIONDETECTORMANYENEMIES01_1A, EVENTS.PLAY_MOTIONDETECTORMANYENEMIES02_1A, EVENTS.PLAY_MOTIONDETECTORMANYENEMIES02_2B, EVENTS.PLAY_MOTIONDETECTORMANYENEMIES02_3A, EVENTS.PLAY_MOTIONDETECTORNOENEMIES01_1A, EVENTS.PLAY_MOTIONDETECTORTAGGEDPLURALA01, EVENTS.PLAY_MOVETOTHENEXTONE01, EVENTS.PLAY_MOVETOTHENEXTONEB01, EVENTS.PLAY_MUSTGETBACKTOELEVATOR01, EVENTS.PLAY_MUSTGETTOCHECKPOINT01, EVENTS.PLAY_MUSTGETTOCHECKPOINTWITHTHING01, EVENTS.PLAY_MUSTGETTOELEVATORWITHTHING01, EVENTS.PLAY_NEEDKEYCARDB01, EVENTS.PLAY_NEEDKEYCARDBLACKA01, EVENTS.PLAY_NEEDKEYCARDBLUEA01, EVENTS.PLAY_NEEDKEYCARDBROWNA01, EVENTS.PLAY_NEEDKEYCARDGREENA01, EVENTS.PLAY_NEEDKEYCARDGREYA01, EVENTS.PLAY_NEEDKEYCARDORANGEA01, EVENTS.PLAY_NEEDKEYCARDPURPLEA01, EVENTS.PLAY_NEEDKEYCARDREDA01, EVENTS.PLAY_NEEDKEYCARDWHITEA01, EVENTS.PLAY_NEEDKEYCARDYELLOWA01, EVENTS.PLAY_ORDERBACKINSIDEIRRITATED01, EVENTS.PLAY_ORDERBACKIRRITATED01, EVENTS.PLAY_ORDERHURRYIRRITATED01_1A, EVENTS.PLAY_ORDERHURRYIRRITATED01_2B, EVENTS.PLAY_ORDERHURRYIRRITATED01_3C, EVENTS.PLAY_ORDERINSIDEIRRITATED01, EVENTS.PLAY_ORDERTOLOCATIONIRRITATED01, EVENTS.PLAY_OXYGEN1001, EVENTS.PLAY_OXYGEN2501, EVENTS.PLAY_OXYGEN5001, EVENTS.PLAY_OXYGENDEATH01, EVENTS.PLAY_PARASITEREMOVEDONTEAMMATE01, EVENTS.PLAY_PARASITEREMOVEONTEAMMATE01, EVENTS.PLAY_PICKEDUPAMMO01_1A, EVENTS.PLAY_PICKEDUPAMMODEPLETED01, EVENTS.PLAY_PICKEDUPHEALTH01_1A, EVENTS.PLAY_PICKEDUPHEALTHWHENLOW01_1A, EVENTS.PLAY_PICKEDUPKEYCARDBEIGEA01, EVENTS.PLAY_PICKEDUPKEYCARDBEIGEB01, EVENTS.PLAY_PICKEDUPKEYCARDBLACKA01, EVENTS.PLAY_PICKEDUPKEYCARDBLACKB01, EVENTS.PLAY_PICKEDUPKEYCARDBLUEA01, EVENTS.PLAY_PICKEDUPKEYCARDBLUEB01, EVENTS.PLAY_PICKEDUPKEYCARDGREENA01, EVENTS.PLAY_PICKEDUPKEYCARDGREENB01, EVENTS.PLAY_PICKEDUPKEYCARDGREYA01, EVENTS.PLAY_PICKEDUPKEYCARDGREYB01, EVENTS.PLAY_PICKEDUPKEYCARDORANGEA01, EVENTS.PLAY_PICKEDUPKEYCARDORANGEB01, EVENTS.PLAY_PICKEDUPKEYCARDPURPLEA01, EVENTS.PLAY_PICKEDUPKEYCARDPURPLEB01, EVENTS.PLAY_PICKEDUPKEYCARDREDA01, EVENTS.PLAY_PICKEDUPKEYCARDREDB01, EVENTS.PLAY_PICKEDUPKEYCARDWHITEA01, EVENTS.PLAY_PICKEDUPKEYCARDWHITEB01, EVENTS.PLAY_PICKEDUPKEYCARDYELLOWA01, EVENTS.PLAY_PICKEDUPKEYCARDYELLOWB01, EVENTS.PLAY_PULSATINGINSTRUCTIONSA01, EVENTS.PLAY_PULSATINGINSTRUCTIONSB01, EVENTS.PLAY_RANDOMCOMMENTCOMBATPOTENTIAL, EVENTS.PLAY_RANDOMCOMMENTPURESTEALTH, EVENTS.PLAY_RELOADAMMODEPLETED01_1A, EVENTS.PLAY_SCOUTINSTRUCTIONSA01, EVENTS.PLAY_SCOUTINSTRUCTIONSB01, EVENTS.PLAY_SECURITYDOORCHECK01, EVENTS.PLAY_SEEWAYTOOBJECTIVE01, EVENTS.PLAY_SENTRYGUNDEPLOY01, EVENTS.PLAY_SHOOTPARASITENEST, EVENTS.PLAY_SHOTYOURSELFFREEFROMCEILINGTENTACLE, EVENTS.PLAY_SHUSH01_CH03, EVENTS.PLAY_SLEEPERINSTRUCTIONSA01, EVENTS.PLAY_SLEEPERINSTRUCTIONSB01, EVENTS.PLAY_SNEEZE01, EVENTS.PLAY_SNEEZENOTTENSE01_2B, EVENTS.PLAY_SNEEZETENSE01_1A, EVENTS.PLAY_SNEEZETENSE01_2B, EVENTS.PLAY_SOMEONEGETSRIDOFPARASITESONYOU_1A, EVENTS.PLAY_SOMEONEGETSRIDOFPARASITESONYOU_2B, EVENTS.PLAY_SPOTIDLEGUARDGROUP01_1A, EVENTS.PLAY_SPOTSCOUT01_1A, EVENTS.PLAY_SPOTSCOUT02, EVENTS.PLAY_SPOTSLEEPERS01, EVENTS.PLAY_SUGGESTKEYCARDB01, EVENTS.PLAY_SUGGESTKEYCARDBLACKA01, EVENTS.PLAY_SUGGESTKEYCARDBLUEA01, EVENTS.PLAY_SUGGESTKEYCARDBROWNA01, EVENTS.PLAY_SUGGESTKEYCARDGREENA01, EVENTS.PLAY_SUGGESTKEYCARDGREYA01, EVENTS.PLAY_SUGGESTKEYCARDORANGEA01, EVENTS.PLAY_SUGGESTKEYCARDPURPLEA01, EVENTS.PLAY_SUGGESTKEYCARDREDA01, EVENTS.PLAY_SUGGESTKEYCARDWHITEA01, EVENTS.PLAY_SUGGESTKEYCARDYELLOWA01, EVENTS.PLAY_TOOKSCOUTOUT01_1A, EVENTS.PLAY_TOOKSCOUTOUT01_2B, EVENTS.PLAY_TRYTOOPENNODEDOOR01, EVENTS.PLAY_WARNBOUTTENTACLES, EVENTS.PLAY_WAYPOINTTOCHECKPOINTACTIVATED01, EVENTS.PLAY_WAYPOINTTODATABANKACTIVATED01, EVENTS.PLAY_WAYPOINTTOEXITELEVATORACTIVATED01 };
+        //uint[] enemytype = { GD.EnemyGroup.PatrolSmall, GD.EnemyGroup.StrikerHorde, GD.EnemyGroup.MixGroup_a, GD.EnemyGroup.PatrolTank, GD.EnemyGroup.PatrolA, GD.EnemyGroup.PatrolB, GD.EnemyGroup.Shooters, GD.EnemyGroup.Floaters, GD.EnemyGroup.GuardTank, GD.EnemyGroup.GuardShooters, GD.EnemyGroup.GuardStrikers, GD.EnemyGroup.GPT_sleeper_group, GD.EnemyGroup.GPT_sleeper_group_Copy, GD.EnemyGroup.GPT_single_striker, GD.EnemyGroup.GPT_single_tank, GD.EnemyGroup.MPTechCombatA, GD.EnemyGroup.MPTechCombatB, GD.EnemyGroup.EnemiesForSoloTest, GD.EnemyGroup.HunterStrikerBig, GD.EnemyGroup.Scout_and_one_striker, GD.EnemyGroup.Sleeper_group_Unite_LA, GD.EnemyGroup.Scout_group_Unite_LA, GD.EnemyGroup.CocoonsGroupTrailer, GD.EnemyGroup.ImmortalTrailer };
+        uint[] enemytype = { GD.Enemy.Striker, GD.Enemy.StrikerHibernate, GD.Enemy.StrikerWave, GD.Enemy.Shadow, GD.Enemy.StrikerBig, GD.Enemy.Tank, GD.Enemy.StrikerBigHibernate, GD.Enemy.StrikerBoss, GD.Enemy.Shooter, GD.Enemy.ShooterHibernate, GD.Enemy.ShooterWave, GD.Enemy.Scout, GD.Enemy.ShooterBig, GD.Enemy.Cocoon, GD.Enemy.Immortal };
         public UnityEngine.Object[] CharacterOBJs;
         public Color EspRGBAPlayers = new Color(1f, 0f, 0f, 1f);
         public EnemyAI enemieslist;
@@ -983,6 +1042,7 @@ namespace gtfohack
         public bool freecam = false;
         public bool benemymarkers = false;
         public bool bkickmenu = false;
+        public bool btestmenu = false;
         float menusx = 100f;
         float menusy = 70f;
         public int healthBarLength;
