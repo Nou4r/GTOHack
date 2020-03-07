@@ -297,7 +297,7 @@ namespace gtfohack
                 if (Input.GetKeyDown(KeyCode.Keypad5)) FocusStateManager.ToggleDebugMenu();
                 if (Input.GetKeyDown(KeyCode.Keypad6)) Application.OpenURL("https://discord.gg/RMxCx63");
                 if (Input.GetKeyDown(KeyCode.Keypad7)) bkickmenu = !bkickmenu;
-                if (Input.GetKeyDown(KeyCode.F1))
+                if (Input.GetKeyDown(KeyCode.Asterisk))
                 {
                     testfunc();
                 }
